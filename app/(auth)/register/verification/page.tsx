@@ -1,6 +1,6 @@
 "use client";
 import { Logo } from "@/app/components/Logo";
-import OTPInput from "@/app/components/otpinput";
+import OTPInput from "@/app/components/otpInput";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Phone, RotateCcw } from "lucide-react";
@@ -25,8 +25,9 @@ function RegisterVerificationContent() {
     const [canResend, setCanResend] = useState(false);
     const [otpValue, setOtpValue] = useState("");
     const [error, setError] = useState("");
-    const [mobile, setMobile] = useState<string>("");
-    // const { showToast } = useToast();
+const [mobile] = useState<string>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("registeredMobile") ?? "" : ""
+);    // const { showToast } = useToast();
 
     // useEffect(() => {
     //     if (countdown <= 0) {
@@ -68,12 +69,8 @@ function RegisterVerificationContent() {
     };
 
     useEffect(() => {
-//     // This only runs on the client after the component mounts
     const savedMobile = localStorage.getItem("registeredMobile");
-    if (savedMobile) {
-        setMobile(savedMobile);
-    } else {
-        // Optional: redirect back to register if data is missing
+    if (!mobile) {
         router.push("/register");
     }
 }, [router]);

@@ -45,8 +45,9 @@ export default function ForgotPassword() {
             await forgotPassword({ mobile: phone });
 
             router.push(`/forgot/verify?mobile=${encodeURIComponent(phone)}`);
-        } catch (err: any) {
-            setError(err?.message || "Something went wrong. Please try again.");
+        } catch (err: unknown) {
+                    const message = err instanceof Error ? err.message : "Failed to resend code";
+            setError(message || "Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -69,8 +70,7 @@ export default function ForgotPassword() {
                             Recovery
                         </h1>
                         <p className="text-[#6B7280] text-lg leading-relaxed">
-                            We'll send you a secure verification code to help you <br />
-                            reset your password and regain access to your account.
+                           {" We'll send you a secure verification code to help you <br /> reset your password and regain access to your account."}
                         </p>
                     </div>
 

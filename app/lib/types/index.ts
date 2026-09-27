@@ -149,7 +149,7 @@ export interface logSalesDataResponse {
   success: boolean;
   message: string;
   data: {
-    logSalesData: {}
+    logSalesData: logSalesData
   }
 }
 
@@ -205,7 +205,7 @@ export interface processingLogDataResponse {
   success: boolean;
   message: string;
   data: {
-    processingLogData: {};
+    processingLogData: processingLogData;
   }
 }
 
@@ -242,7 +242,7 @@ export interface processingMetricsDataResponse {
   success: boolean;
   message: string;
   data: {
-  processingMetricsData: {}
+  processingMetricsData: processingMetricsData
 }
 }
 

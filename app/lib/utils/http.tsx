@@ -1,6 +1,9 @@
+// app/lib/utils/http.tsx
 import { getCookie, setCookie, deleteCookie } from "./cookie";
+import { mockRequest } from "./mockRouter";
 
 const APP_API_BASEURL = process.env.NEXT_PUBLIC_API_BASEURL;
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
 const getHeaders = () => {
   const token = getCookie("accessToken");
@@ -39,62 +42,66 @@ const refreshAccessToken = async (): Promise<string | null> => {
   }
 };
 
-// Shared fetch handler with automatic token refresh + retry
-const fetchWithRefresh = async (url: string, options: RequestInit): Promise<any> => {
+// Shared fetch handler with automatic token refresh + retry (or mock, when enabled)
+const fetchWithRefresh = async <T = unknown>(url: string, options: RequestInit): Promise<T> => {
+  if (USE_MOCKS) {
+    const method = options.method || "GET";
+    const body: unknown = options.body ? JSON.parse(options.body as string) : undefined;
+    return mockRequest(url, method, body) as Promise<T>;
+  }
+
   const res = await fetch(`${APP_API_BASEURL}${url}`, {
     ...options,
     headers: getHeaders(),
   });
 
-  // If 401, try to refresh and retry once
   if (res.status === 401) {
     if (url.startsWith("/api/auth/")) {
-        throw await res.json();
+      throw await res.json();
     }
 
     const newToken = await refreshAccessToken();
 
     if (!newToken) {
-        deleteCookie("accessToken");
-        deleteCookie("refreshToken");
-        window.location.href = "/login";
-        return;
-    }
+  deleteCookie("accessToken");
+  deleteCookie("refreshToken");
+  throw { success: false, message: "Session expired", code: "SESSION_EXPIRED" };
+}
 
     const retryRes = await fetch(`${APP_API_BASEURL}${url}`, {
-        ...options,
-        headers: {
-            ...getHeaders(),
-            Authorization: `Bearer ${newToken}`,
-        },
+      ...options,
+      headers: {
+        ...getHeaders(),
+        Authorization: `Bearer ${newToken}`,
+      },
     });
 
     if (!retryRes.ok) throw await retryRes.json();
     return retryRes.json();
-}
+  }
 
   if (!res.ok) throw await res.json();
   return res.json();
 };
 
 export const Http = {
-  get: (url: string) =>
-    fetchWithRefresh(url, { method: "GET" }),
+  get: <T = unknown>(url: string) =>
+    fetchWithRefresh<T>(url, { method: "GET" }),
 
-  post: (url: string, body: any) =>
-    fetchWithRefresh(url, {
+  post: <T = unknown, B = unknown>(url: string, body: B) =>
+    fetchWithRefresh<T>(url, {
       method: "POST",
       body: JSON.stringify(body),
     }),
 
-  put: (url: string, body: any) =>
-    fetchWithRefresh(url, {
+  put: <T = unknown, B = unknown>(url: string, body: B) =>
+    fetchWithRefresh<T>(url, {
       method: "PUT",
       body: JSON.stringify(body),
     }),
 
-  delete: (url: string) =>
-    fetchWithRefresh(url, { method: "DELETE" }),
+  delete: <T = unknown>(url: string) =>
+    fetchWithRefresh<T>(url, { method: "DELETE" }),
 };
 
 export default Http;

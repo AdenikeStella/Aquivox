@@ -27,8 +27,9 @@ export const forgotPassword = (payload: { mobile: string }) => {
 }
 
 export const forgotPasswordOTPVerification = (payload: ForgotPasswordVerifyOTP) => {
-    return Http.post('/api/auth/forgot-password/verify-otp', payload);
+    return Http.post<ForgotPasswordVerifyOTPResponse>('/api/auth/forgot-password/verify-otp', payload);
 }
+
 
 export const resendForgotPasswordOtp = (payload: { mobile: string }) => {
     return Http.post('/api/auth/forgot-password/request-otp', payload);

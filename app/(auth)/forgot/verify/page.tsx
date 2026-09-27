@@ -1,6 +1,7 @@
 "use client";
 import { Logo } from "@/app/components/Logo";
-import OTPInput from "@/app/components/otpinput";
+import OTPInput from "@/app/components/otpInput";
+import { getErrorMessage } from "@/app/lib/utils";
 import {
   forgotPasswordOTPVerification,
   resendForgotPasswordOtp,
@@ -65,7 +66,6 @@ function ForgotVerifyContent() {
 
   useEffect(() => {
     if (countdown <= 0) {
-      setCanResend(true);
       return;
     }
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
@@ -77,7 +77,8 @@ function ForgotVerifyContent() {
       await resendForgotPasswordOtp({ mobile });
       setCanResend(false);
       setCountdown(RESEND_SECONDS);
-    } catch (err: any) {
+    } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : "Failed to resend code";
       console.log("Resend error:", err);
     }
   };
@@ -96,8 +97,8 @@ function ForgotVerifyContent() {
       router.push(
         `/forgot/newPassword?token=${encodeURIComponent(passwordResetToken)}`,
       );
-    } catch (err: any) {
-      setError(err?.message || "Invalid OTP. Please try again.");
+    } catch (err: unknown) {
+    setError(getErrorMessage(err));
       console.log("OTP error:", err);
     } finally {
       setIsLoading(false);
