@@ -1,14 +1,14 @@
-import { logSalesData } from "../lib/types";
+import { logSalesData, logSalesDataResponse, logSalesHistoryDataResponse, LogSalesMetricsResponse } from "../lib/types";
 import Http from "../lib/utils/http";
 
 export const logSales = (payload: logSalesData) => {
-    return Http.post(`/api/sales`, payload)
+    return Http.post<logSalesDataResponse>(`/api/sales`, payload)
 };
 
 export const logSalesHistory = () => {
-    return Http.get(`/api/sales`)
+    return Http.get<logSalesHistoryDataResponse>(`/api/sales`)
 };
 
-export const logSalesMetrics = (payload: any) => {
-    return Http.get(`/api/sales/summary`)
+export const logSalesMetrics = () => {
+    return Http.get<LogSalesMetricsResponse>(`/api/sales/summary`)
 }

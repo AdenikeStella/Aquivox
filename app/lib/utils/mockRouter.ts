@@ -11,7 +11,7 @@ import {
 const delay = (ms = 500) => new Promise<void>((res) => setTimeout(res, ms));
 
 const MOCK_USERS = [
-  { mobile: "+2348012345678", password: "Password123!", fullName: "Adenike Stella", role: "Fisher" },
+  { mobile: "+2348122381218", password: "Tester@123", fullName: "Adenike Turton", role: "Fisher" },
 ];
 
 export async function mockRequest(url: string, method: string, body?: unknown) {

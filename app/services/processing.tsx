@@ -1,16 +1,16 @@
-import { processingLogData } from "../lib/types";
+import { processingLogData, processingLogDataResponse, processingHistoryResponse, processingMetricsDataResponse } from "../lib/types";
 import Http from "../lib/utils/http";
 
 export const processingEntry = (
     payload: processingLogData
 ) => {
-    return Http.post(`/api/processing`, payload);
+    return Http.post<processingLogDataResponse>(`/api/processing`, payload);
 };
 
 export const processingHistoryList = () => {
-    return Http.get(`/api/processing`)
+    return Http.get<processingHistoryResponse>(`/api/processing`)
 };
 
 export const processingMetrics = () => {
-    return Http.get(`/api/processing/summary`)
+    return Http.get<processingMetricsDataResponse>(`/api/processing/summary`)
 };

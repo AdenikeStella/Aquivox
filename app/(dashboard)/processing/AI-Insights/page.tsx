@@ -3,12 +3,18 @@ import {
   ArrowLeft, 
   AlertTriangle, 
   ChevronDown, 
-  Wind, 
-  Thermometer, 
-  Droplets,
   Zap
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface StorageCardProps {
+  species: string;
+  risk: string;
+  riskColor: string;
+  storage: string;
+  handling: string;
+  reduction: string;
+}
 
 export default function AIInsights() {
   return (
@@ -122,7 +128,7 @@ export default function AIInsights() {
   );
 }
 
-function StorageCard({ species, risk, riskColor, storage, handling, reduction }: any) {
+function StorageCard({ species, risk, riskColor, storage, handling, reduction }: StorageCardProps) {
   return (
     <div className="border border-slate-100 rounded-xl p-5 space-y-4">
       <div className="flex justify-between items-center">
@@ -141,3 +147,5 @@ function StorageCard({ species, risk, riskColor, storage, handling, reduction }:
     </div>
   );
 }
+
+

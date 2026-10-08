@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
-import { Public_Sans, Inter } from "next/font/google";
-import "./globals.css";
+import "@fontsource/public-sans/300.css";
+import "@fontsource/public-sans/400.css";
+import "@fontsource/public-sans/500.css";
+import "@fontsource/public-sans/600.css";
+import "@fontsource/public-sans/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";import "./globals.css";
 import { ToastProvider } from "./context/ToastContext";
 
-const publicSans = Public_Sans ({
+const publicSans = ({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ["latin"],
     variable: '--font-public-sans',
 })
 
-const inter = Inter({
+const inter = ({
   subsets: ['latin'],
   variable: '--font-inter',
 })

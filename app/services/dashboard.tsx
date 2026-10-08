@@ -1,5 +1,6 @@
+import { dashboardMetricsResponse } from "../lib/types";
 import Http from "../lib/utils/http"
 
-export const DashboardMetricsData = (payload: any) => {
-  return  Http.get(`/api/dashboard/summary`)
+export const DashboardMetricsData = () => {
+  return Http.get<dashboardMetricsResponse>(`/api/dashboard/summary`)
 }

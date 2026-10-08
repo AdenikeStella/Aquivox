@@ -10,7 +10,7 @@ import {
     ShieldHalf,
     ChartColumnStacked,
 } from "lucide-react";
-import { dailyCatchLog, dailycatchMetrics } from "@/app/services/logCatch";
+import { dailyCatchLog } from "@/app/services/logCatch";
 import { useToast } from "@/app/context/ToastContext";
 
 const speciesOptions = [

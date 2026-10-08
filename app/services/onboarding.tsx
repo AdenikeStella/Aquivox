@@ -1,4 +1,4 @@
-import { ForgotPasswordVerifyOTP, ForgotPasswordVerifyOTPResponse, SetNewPassword, UserLogin, UserOnboarding, VerifyOTP } from "../lib/types";
+import { ForgotPasswordVerifyOTP, ForgotPasswordVerifyOTPResponse, SetNewPassword, UserLogin, UserLoginResponse, UserOnboarding, VerifyOTP } from "../lib/types";
 import Http from "../lib/utils/http";
 
 
@@ -7,7 +7,7 @@ export const customerOnboarding = (payload: UserOnboarding) => {
 }
 
 export const customerLogin = (payload: UserLogin) => {
-    return Http.post('/api/auth/login', payload);
+    return Http.post<UserLoginResponse>('/api/auth/login', payload);
 }
 
 export const OtpVerification = (payload: VerifyOTP) => {

@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import { WeatherCard, SustainabilityCard, IncomeRiskCard } from "@/app/components/statusCards";
 import { useEffect, useState } from "react";
-import { dashboardMetrics, dashboardMetricsResponse } from "@/app/lib/types";
+import { dashboardMetrics} from "@/app/lib/types";
 import { DashboardMetricsData } from "@/app/services/dashboard";
 
 
@@ -63,19 +63,15 @@ const transactions = [
 
 export default function DashboardPage() {
     const [metricsData, setMetricsData] = useState<dashboardMetrics | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getMetricsData = async () => {
-        setIsLoading(true);
 
-        try {
-            const payload = {}
-            const response = await DashboardMetricsData(payload);
-            const items = response.data
-            setMetricsData(items)
+                try {
+            const response = await DashboardMetricsData();
         }
-        catch (err: any) {
-            console.error("failed to load metrics");
+        catch (err: unknown) {
+            console.error("failed to load metrics", err);
         }
     };
 
@@ -127,6 +123,11 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </div>
+                    {isLoading ? (
+  <tbody><tr><td colSpan={7} className="py-10 text-center text-slate-500">Loading sales history…</td></tr></tbody>
+) : (
+  <tbody className="divide-y divide-slate-100"> ... </tbody>
+)}
                 </div>
 
                 {/* previous month */}

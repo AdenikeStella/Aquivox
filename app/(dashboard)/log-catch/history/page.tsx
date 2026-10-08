@@ -25,11 +25,9 @@ export default function CatchHistoryPage() {
 
     const logMetrics = async () => {
         setIsLoading(true);
-        try {
-            const payload = {}
-            const response = await dailycatchMetrics(payload);
-            const items = response.data
-            setCatchMetrics(items);
+       try {
+            const response = await dailycatchMetrics();
+            setCatchMetrics(response.data);
         }
 
         catch (error) {
@@ -39,18 +37,18 @@ export default function CatchHistoryPage() {
         }
     }
 
-    useEffect(() => {
-        logMetrics();
-    }, []);
+    // useEffect(() => {
+    //     logMetrics();
+    // }, []);
 
 
 
     const getCatchHistory = async () => {
         setIsLoading(true);
-        try {
-            const response = await dailyCatchHistory({});
-            if (response.data?.data) {
-                setCatches(response.data.data);
+          try {
+            const response = await dailyCatchHistory();
+            if (response.data) {
+                setCatches(response.data);
             }
         } catch (error) {
             console.error("Failed to load history", error);
@@ -59,9 +57,9 @@ export default function CatchHistoryPage() {
         }
     };
 
-    useEffect(() => {
-        getCatchHistory();
-    }, []);
+    // useEffect(() => {
+    //     getCatchHistory();
+    // }, []);
 
     const filtered = catches.filter((c) =>
         c.species?.toLowerCase().includes(search.toLowerCase()) ||

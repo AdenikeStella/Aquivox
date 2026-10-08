@@ -2,13 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { 
   AlertCircle, 
-  X, 
   Info, 
-  ChevronDown, 
-  ChevronUp, 
   Box, 
   Zap, 
-  ArrowUpRight,
   Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
@@ -16,8 +12,19 @@ import { processingEntry, processingHistoryList, processingMetrics } from '@/app
 import { useToast } from '@/app/context/ToastContext';
 import { processingHistory, processingMetricsData } from '@/app/lib/types';
 
+import type { ReactNode } from "react";
+
+interface ProcessStatProps {
+  label: string;
+  value: string | number;
+  change: string | number;
+  isAlert?: boolean;
+  icon: ReactNode;
+  isSuccess?: boolean;
+}
+
 export default function ProcessingTracking() {
-  const [isLoading, setIsLoading] =  useState(false);
+  const [isLoading, setIsLoading] =  useState(true);
 const [formData, setFormData] = useState({
   processingDate: "",
   volumeReceived: 0,
@@ -32,24 +39,26 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const getProcessingMetrics = async () => {
-            setIsLoading(true);
+    
+
+        useEffect(() => {
+          const getProcessingMetrics = async () => {
+            // setIsLoading(true);
             try {
-                const response = await processingMetrics();
-                const items = response.data
-                setDailyProcessingMetrics(items);
+                  const response = await processingMetrics();
+                setDailyProcessingMetrics(response.data.processingMetricsData);
             }
     
             catch (error) {
-                console.error("Failed to load metrcis")
+                console.error("Failed to load metrcis", error)
             } finally {
                 setIsLoading(false);
             }
         }
+          getProcessingMetrics();
+        })
     
-        useEffect(() => {
-            getProcessingMetrics();
-        }, []);
+        
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -79,10 +88,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     const getProcessingHistory = async () => {
       setIsLoading(true);
       
-      try {
-                  const response = await processingHistoryList();
-                  if (response.data?.data) {
-                      setProcessingHistory(response.data.data);
+      try {                  const response = await processingHistoryList();
+                  if (response.data?.processingHistory) {
+                      setProcessingHistory(response.data.processingHistory);
                   }
               } catch (error) {
                   console.error("Failed to load history", error);
@@ -91,9 +99,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
               }
           };
       
-          useEffect(() => {
-              getProcessingHistory();
-          }, []);
+          // useEffect(() => {
+          //     getProcessingHistory();
+          // }, []);
 
   return (
     <div className="space-y-6 pb-10 p-8">
@@ -112,9 +120,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ProcessStat label="Total Volume Processed" value= {dailyProcessingMetrics?.totalProcessedKg} change={dailyProcessingMetrics?.processedPercentChange} icon={<Box size={20} />} />
-        <ProcessStat label="Total Spoilage (7 days)" value={dailyProcessingMetrics?.spoilageLast7DaysKg} change={dailyProcessingMetrics?.spoilagePercentChange} icon={<AlertCircle size={20} />} isAlert />
-        <ProcessStat label="Average Yield Rate" value={dailyProcessingMetrics?.avgYieldRate} change={dailyProcessingMetrics?.avgYieldPercent} icon={<Zap size={20} />} isSuccess />
+        <ProcessStat label="Total Volume Processed" value= {dailyProcessingMetrics?.totalProcessedKg || 0} change={dailyProcessingMetrics?.processedPercentChange || 0} icon={<Box size={20} />} />
+        <ProcessStat label="Total Spoilage (7 days)" value={dailyProcessingMetrics?.spoilageLast7DaysKg || 0} change={dailyProcessingMetrics?.spoilagePercentChange || 0} icon={<AlertCircle size={20} />} isAlert />
+        <ProcessStat label="Average Yield Rate" value={dailyProcessingMetrics?.avgYieldRate || 0} change={dailyProcessingMetrics?.avgYieldPercent || 0} icon={<Zap size={20} />} isSuccess />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -138,7 +146,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
             </div>
             <div className="flex justify-between gap-4 pt-4">
               <button onClick={() => setFormData({ processingDate: "", volumeReceived: 0, volumeSpoiled: 0 })} type="button" className="text-slate-500 font-bold">Discard Draft</button>
-              <button onClick={handleSubmit} type="submit" className="bg-[#005F6B] text-white px-4 lg:px-8 py-3 rounded-lg font-bold flex items-center gap-2">
+              <button  type="submit" className="bg-[#005F6B] text-white px-4 lg:px-8 py-3 rounded-lg font-bold flex items-center gap-2">
                 <Box size={18} /> Save Record
               </button>
             </div>
@@ -202,7 +210,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
                         )}
 
                         {!isLoading && processingHistory.map((row, i) => (
-                            <tr
+                            <tr key={row.status}
                                 className="border-b border-[#F5F5F5] hover:bg-[#F5F5F5] transition-colors "
                             >
                                 <td className="px-6 py-4 text-[#4F4F4F] text-sm">{row.processingDate}</td>
@@ -239,7 +247,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   );
 }
 
-function ProcessStat({ label, value, change, icon, isAlert, isSuccess }: any) {
+function ProcessStat({ label, value, change, icon, isAlert, isSuccess }: ProcessStatProps) {
   return (
     <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex gap-4">
       <div className={`p-3 rounded-lg h-fit ${isAlert ? 'bg-red-50 text-red-500' : isSuccess ? 'bg-teal-50 text-teal-600' : 'bg-slate-50 text-teal-800'}`}>
@@ -255,3 +263,5 @@ function ProcessStat({ label, value, change, icon, isAlert, isSuccess }: any) {
     </div>
   );
 }
+
+

@@ -1,52 +1,73 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Plus, DollarSign, Box, TrendingUp, TrendingDown, Search, Download, Eye, Printer, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Plus, DollarSign, Box, TrendingUp, Search, Download, Eye, Printer, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { logSalesHistory, logSalesMetrics } from '@/app/services/logSales';
 import { logSalesHistoryData, LogSalesMetrics } from '@/app/lib/types';
 import { Spinner } from '@/app/components/ui/spinner';
 
+import type { ReactNode } from "react";
+
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  change?: string;
+  changeLabel: string;
+  icon: ReactNode;
+  iconBg: string;
+}
+
+interface TableRowProps {
+  date: string;
+  initial: string;
+  buyer: string;
+  species: string;
+  qty: string;
+  price: string;
+  total: string;
+}
+
 export default function SalesHistory() {
-const [salesData, setSalesData] = useState<logSalesHistoryData[] | []>([]);
+const [salesData, setSalesData] = useState<logSalesHistoryData | []>([]);
 const [salesMetrics, setSalesMetrics] = useState<LogSalesMetrics | null>(null);
-const [isLoading, setIsLoading] = useState(false);
+const [isMetricsLoading, setIsMetricsLoading] = useState(true);
+const [isHistoryLoading, setIsHistoryLoading] = useState(true);
 
-    const logMetrics = async () => {
-        setIsLoading(true);
-        try {
-            const payload = {}
-            const response = await logSalesMetrics(payload);
-            const items = response.data
-            setSalesMetrics(items);
-        }
 
-        catch (error) {
-            console.error("Failed to load metrcis")
-        } finally {
-            setIsLoading(false);
-        }
-    }
 
     useEffect(() => {
-        logMetrics();
-    }, []);
+    const loadMetrics = async () => {
+        setIsMetricsLoading(true);
 
-  const getSalesHistory = async () => {
-          setIsLoading(true);
+        try {
+            const response = await logSalesMetrics();
+            setSalesMetrics(response.data);
+        } catch (error) {
+            console.error("Failed to load metrics", error);
+        } finally {
+            setIsMetricsLoading(false);
+        }
+    };
+
+    loadMetrics();
+}, []);
+
+  
+  
+      useEffect(() => {
+        const getSalesHistory = async () => {
+          setIsHistoryLoading(true);
           try {
               const response = await logSalesHistory();
-              console.log(response);
-              if (response.data?.data) {
-                  setSalesData(response.data.data);
+              if (response.data?.logSalesHistoryData) {
+                  setSalesData(response.data.logSalesHistoryData);
               }
           } catch (error) {
               console.error("Failed to load history", error);
           } finally {
-              setIsLoading(false);
+              setIsHistoryLoading(false);
           }
       };
-  
-      useEffect(() => {
           getSalesHistory();
       }, []);
 
@@ -72,16 +93,16 @@ const [isLoading, setIsLoading] = useState(false);
       </div>
 
       {/* Stats Cards */}
-       {isLoading ? (
+       {isMetricsLoading ? (
                 <div className="justify-center items-center mx-auto flex mb-10 gap-5">
                     <h2 className="flex text-lg">Loading log metrics </h2>
                     <span className="flex justify-center items-center"><Spinner className="w-5 h-5"/></span>
                 </div>
        ):(
       <div className="grid grid-cols-3 gap-6">
-        <StatCard title="MONTHLY TOTAL REVENUE" value={salesMetrics?.totalRevenue} change="+12.5%" changeLabel="vs last month" icon={<DollarSign className="text-teal-700" />} iconBg="bg-teal-100" />
-        <StatCard title="TOTAL WEIGHT SOLD" value={salesMetrics?.totalWeightSoldKg} change="+5.2%" changeLabel="volume increase" icon={<Box className="text-teal-700" />} iconBg="bg-teal-100" />
-        <StatCard title="TOTAL TRANSACTIONS" value={salesMetrics?.totalTransactions} changeLabel="Active selling period" icon={<TrendingUp className="text-teal-700" />} iconBg="bg-teal-100" />
+        <StatCard title="MONTHLY TOTAL REVENUE" value={salesMetrics?.totalRevenue || 0} change="+12.5%" changeLabel="vs last month" icon={<DollarSign className="text-teal-700" />} iconBg="bg-teal-100" />
+        <StatCard title="TOTAL WEIGHT SOLD" value={salesMetrics?.totalWeightSoldKg || 0} change="+5.2%" changeLabel="volume increase" icon={<Box className="text-teal-700" />} iconBg="bg-teal-100" />
+        <StatCard title="TOTAL TRANSACTIONS" value={salesMetrics?.totalTransactions || 0} changeLabel="Active selling period" icon={<TrendingUp className="text-teal-700" />} iconBg="bg-teal-100" />
       </div>
        )}
 
@@ -112,18 +133,12 @@ const [isLoading, setIsLoading] = useState(false);
               <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
-           {isLoading ? (
-                <div className="justify-center items-center mx-auto flex mb-10 gap-5">
-                    <h2 className="flex text-lg justify-center">Loading log metrics </h2>
-                    <span className="flex justify-center items-center"><Spinner className="w-5 h-5"/></span>
-                </div>
-           ):(
-          <tbody className="divide-y divide-slate-100">
-            {salesData.map((sales: logSalesHistoryData, index: number) => (
-            <TableRow key={index} date={sales.transactionDate} initial="AT" buyer={sales.buyerName} species={sales.species} qty={sales.quantitySoldKg} price={sales.pricePerUnit} total={sales.totalRevenue} />
-            ))}
-          </tbody>
-        )}
+           {isHistoryLoading ? (
+  <tbody><tr><td colSpan={7} className="py-10 text-center text-slate-500">Loading sales history…</td></tr></tbody>
+) : (
+  <tbody className="divide-y divide-slate-100"> ... </tbody>
+)}
+          
          
         </table>
       </div>
@@ -132,7 +147,7 @@ const [isLoading, setIsLoading] = useState(false);
 }
 
 // Sub-components
-function StatCard({ title, value, change, changeLabel, icon, iconBg }: any) {
+function StatCard({ title, value, change, changeLabel, icon, iconBg }: StatCardProps) {
   return (
     <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex justify-between">
       <div>
@@ -150,7 +165,7 @@ function StatCard({ title, value, change, changeLabel, icon, iconBg }: any) {
   );
 }
 
-function TableRow({ date, initial, buyer, species, qty, price, total }: any) {
+function TableRow({ date, initial, buyer, species, qty, price, total }: TableRowProps) {
   return (
     <tr className="hover:bg-slate-50 transition-colors group">
       <td className="px-6 py-4 text-slate-600">{date}</td>

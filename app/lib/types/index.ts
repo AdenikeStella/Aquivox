@@ -13,6 +13,19 @@ export interface UserLogin {
   password: string;
 }
 
+export interface UserLoginResponse {
+  success: boolean;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      fullName: string;
+      role: string;
+    };
+  };
+}
+
 export interface VerifyOTP {
   mobile: string;
   otp: string;
@@ -167,7 +180,7 @@ export interface logSalesHistoryDataResponse {
   success: boolean;
   message: string;
   data: {
-    logSalesHistoryData: []
+    logSalesHistoryData: logSalesHistoryData;
   }
 }
 
@@ -222,7 +235,7 @@ export interface processingHistoryResponse {
   success: boolean;
   message: string;
   data: {
-    processingHistory: [];
+    processingHistory: processingHistory[];
   }
 }
 
@@ -242,7 +255,7 @@ export interface processingMetricsDataResponse {
   success: boolean;
   message: string;
   data: {
-  processingMetricsData: processingMetricsData
+  processingMetricsData: processingMetricsData;
 }
 }
 
