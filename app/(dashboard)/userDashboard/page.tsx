@@ -63,19 +63,22 @@ const transactions = [
 
 export default function DashboardPage() {
     const [metricsData, setMetricsData] = useState<dashboardMetrics | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(false);
 
-    const getMetricsData = async () => {
+    
+
+    useEffect(() => {
+        const getMetricsData = async () => {
 
                 try {
             const response = await DashboardMetricsData();
+            const item = response.data
+            setMetricsData(item);
         }
         catch (err: unknown) {
             console.error("failed to load metrics", err);
         }
     };
-
-    useEffect(() => {
         getMetricsData();
     }, []);
 
@@ -123,11 +126,11 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </div>
-                    {isLoading ? (
+                    {/* {isLoading ? (
   <tbody><tr><td colSpan={7} className="py-10 text-center text-slate-500">Loading sales history…</td></tr></tbody>
 ) : (
   <tbody className="divide-y divide-slate-100"> ... </tbody>
-)}
+)} */}
                 </div>
 
                 {/* previous month */}

@@ -1,6 +1,5 @@
 "use client";
 import { Logo } from "@/app/components/Logo";
-import { useRouter } from "next/navigation";
 import { User, BarChart2, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -32,7 +31,6 @@ const nextSteps = [
 ];
 
 export default function RegisterSuccess() {
-    const router = useRouter();
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 py-12 bg-[#F3F4F6]">

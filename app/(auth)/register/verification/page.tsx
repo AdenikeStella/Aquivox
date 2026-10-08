@@ -1,7 +1,7 @@
 "use client";
 import { Logo } from "@/app/components/Logo";
 import OTPInput from "@/app/components/otpInput";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Phone, RotateCcw } from "lucide-react";
 import Link from "next/link";

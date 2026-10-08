@@ -15,8 +15,6 @@ import { Input } from "@/app/components/input";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { User, Phone, Lock, X, AlertCircle, MapPin } from "lucide-react";
 import { useState } from "react";
-import { customerOnboarding } from "@/app/services/onboarding";
-import { UserOnboarding } from "@/app/lib/types";
 import { useToast } from "@/app/context/ToastContext";
 const roles = ["Fisher", "Aquaculture Operator", "Supplier", "Buyer", "Other"];
 
@@ -43,42 +41,42 @@ const registerSchema = z
 
 type RegisterFormType = z.infer<typeof registerSchema>;
 
-function ErrorBanner({ message, onClose }: { message: string; onClose: () => void }) {
-    return (
-        <div className="flex items-start gap-3 bg-[#FEF2F2] border border-[#FECACA] rounded-xl p-4 mb-2">
-            <span className="flex items-center justify-center bg-[#EF4444] rounded-full w-7 h-7 shrink-0 mt-0.5">
-                <AlertCircle size={14} className="text-white" />
-            </span>
-            <div className="flex-1">
-                <p className="text-sm font-semibold text-[#991B1B]">
-                    Phone Number Already Registered
-                </p>
-                <p className="text-xs text-[#7F1D1D] mt-0.5">{message}</p>
-                <button
-                    type="button"
-                    onClick={() => onClose()}
-                    className="mt-2 px-3 py-1 bg-[#EF4444] text-white text-xs font-semibold rounded-md hover:bg-[#DC2626] transition"
-                >
-                    Sign In
-                </button>
-            </div>
-            <button
-                type="button"
-                onClick={onClose}
-                className="text-[#9CA3AF] hover:text-[#6B7280] mt-0.5"
-            >
-                <X size={16} />
-            </button>
-        </div>
-    );
-}
+// function ErrorBanner({ message, onClose }: { message: string; onClose: () => void }) {
+//     return (
+//         <div className="flex items-start gap-3 bg-[#FEF2F2] border border-[#FECACA] rounded-xl p-4 mb-2">
+//             <span className="flex items-center justify-center bg-[#EF4444] rounded-full w-7 h-7 shrink-0 mt-0.5">
+//                 <AlertCircle size={14} className="text-white" />
+//             </span>
+//             <div className="flex-1">
+//                 <p className="text-sm font-semibold text-[#991B1B]">
+//                     Phone Number Already Registered
+//                 </p>
+//                 <p className="text-xs text-[#7F1D1D] mt-0.5">{message}</p>
+//                 <button
+//                     type="button"
+//                     onClick={() => onClose()}
+//                     className="mt-2 px-3 py-1 bg-[#EF4444] text-white text-xs font-semibold rounded-md hover:bg-[#DC2626] transition"
+//                 >
+//                     Sign In
+//                 </button>
+//             </div>
+//             <button
+//                 type="button"
+//                 onClick={onClose}
+//                 className="text-[#9CA3AF] hover:text-[#6B7280] mt-0.5"
+//             >
+//                 <X size={16} />
+//             </button>
+//         </div>
+//     );
+// }
 
 export default function RegisterForm() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [serverError, setServerError] = useState("");
+    // const [serverError, setServerError] = useState("");
     const { showToast } = useToast();
 
     const form = useForm<RegisterFormType>({
@@ -116,7 +114,7 @@ export default function RegisterForm() {
         localStorage.setItem("registeredMobile", data.phoneNumber); 
         console.log("Saved mobile:", localStorage.getItem("registeredMobile")); // 👈
         showToast("Registration successful! Please verify your account.", "success");
-        router.push("./verification"); 
+        router.push("/register/verification"); 
 
     }
 
